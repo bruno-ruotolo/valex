@@ -5,6 +5,9 @@ import bcrypt from "bcrypt";
 import * as employeeRepository from "../repositories/employeeRepository.js"
 import * as companyRepository from "../repositories/companyRepository.js"
 import * as cardRepository from "../repositories/cardRepository.js"
+import * as rechargeRepository from "../repositories/rechargeRepository.js"
+import * as paymentRepository from "../repositories/paymentRepository.js"
+
 import chalk from 'chalk';
 
 export async function createCardsService(
@@ -53,6 +56,26 @@ export async function activateCardsService(cardId: number, password: string, sec
 
 export async function infosCardsService(cardId: number) {
   await findCardById(cardId);
+  const recharges = await rechargeRepository.findByCardId(cardId);
+  const payments = await paymentRepository.findByCardId(cardId);
+  const { rechargeAmount } = await rechargeRepository.sumByCardId(cardId);
+  const { paymentAmount } = await paymentRepository.sumByCardId(cardId);
+
+  const infoData = {
+    balance: rechargeAmount - paymentAmount,
+    transactions: payments,
+    recharges: recharges
+  };
+
+  return infoData;
+};
+
+export async function blockCardsService(cardId: number, password: string) {
+  const card = await findCardById(cardId);
+  await validateCardExpirationDate(card);
+  await validateBlockCards(card);
+  await validatePassword(card, password);
+  await cardRepository.update(cardId, { isBlocked: true });
 };
 
 async function validateApiKey(x_api_key: string) {
@@ -146,4 +169,14 @@ async function validateCVV(card: any, securityCode: string) {
 function encryptPassword(password: string) {
   const passwordHash = bcrypt.hashSync(password, 10);
   return passwordHash;
+};
+
+async function validateBlockCards(card: any) {
+  if (card.isBlocked === true) throw { statusCode: 401, message: "Card Already Blocked" };
+};
+
+async function validatePassword(card: any, password: string) {
+  if (!bcrypt.compareSync(password, card.password)) {
+    throw { statusCode: 401, message: "Invalid Password" };
+  }
 };
