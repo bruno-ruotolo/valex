@@ -1,9 +1,17 @@
 import joi from "joi";
 
-const cardsSchema = joi.object({
+export const createCardSchema = joi.object({
   employeeId: joi.number().required(),
-  type: joi.string().valid("groceries", "restaurant", "transport", "education", "health").required(),
-  password: joi.string().required()
+  type: joi.string().valid("groceries", "restaurant", "transport", "education", "health").required()
 });
 
-export default cardsSchema;
+
+export const activateCardSchema = joi.object({
+  cardId: joi.number().required(),
+  securityCode: joi.string().min(3).required(),
+  password: joi.string().pattern(/\d{4,}/).required(),
+});
+
+export const infosCardSchema = joi.object({
+  cardId: joi.number().required()
+});
