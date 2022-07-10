@@ -7,20 +7,19 @@ import * as companyRepository from "../repositories/companyRepository.js"
 import * as cardRepository from "../repositories/cardRepository.js"
 import * as rechargeRepository from "../repositories/rechargeRepository.js"
 import * as paymentRepository from "../repositories/paymentRepository.js"
+import * as utils from "../utils/utils.js"
 
 import chalk from 'chalk';
 
 export async function createCardsService(
   employeeId: number,
-  type: cardRepository.TransactionTypes,
-  x_api_key: string
+  type: cardRepository.TransactionTypes
 ) {
-  await validateApiKey(x_api_key);
   await validadeCardByTypeAndEmployee(type, employeeId);
   const employee = await findEmployee(employeeId);
   const cardholderName = generateCardName(employee.fullName);
   const cardNumber = generateCardNumber();
-  const expirationDate = generateTodayDate();
+  const expirationDate = utils.generateTodayDate();
   const encryptedCVV = generateCardCVV();
 
   const cardData = {
@@ -40,8 +39,8 @@ export async function createCardsService(
 };
 
 export async function activateCardsService(cardId: number, password: string, securityCode: string) {
-  const card = await findCardById(cardId);
-  await validateCardExpirationDate(card);
+  const card = await utils.findCardById(cardId);
+  await utils.validateCardExpirationDate(card,);
   await validateCardActivation(card);
   await validateCVV(card, securityCode);
   const passwordHash = encryptPassword(password);
@@ -55,7 +54,7 @@ export async function activateCardsService(cardId: number, password: string, sec
 };
 
 export async function infosCardsService(cardId: number) {
-  await findCardById(cardId);
+  await utils.findCardById(cardId);
   const recharges = await rechargeRepository.findByCardId(cardId);
   const payments = await paymentRepository.findByCardId(cardId);
   const { rechargeAmount } = await rechargeRepository.sumByCardId(cardId);
@@ -71,17 +70,11 @@ export async function infosCardsService(cardId: number) {
 };
 
 export async function lockCardsService(cardId: number, password: string, blockStatus: boolean) {
-  const card = await findCardById(cardId);
-  await validateCardExpirationDate(card);
+  const card = await utils.findCardById(cardId);
+  await utils.validateCardExpirationDate(card);
   await validateLockCards(card, blockStatus);
   await validatePassword(card, password);
   await cardRepository.update(cardId, { isBlocked: blockStatus });
-};
-
-async function validateApiKey(x_api_key: string) {
-  const apiKey = await companyRepository.findByApiKey(x_api_key);
-
-  if (!apiKey) throw { statusCode: 401, message: "Invalid Company ApiKey" };
 };
 
 async function validadeCardByTypeAndEmployee(type: cardRepository.TransactionTypes, employeeId: number) {
@@ -121,14 +114,6 @@ function generateCardNumber() {
   return cardNumber;
 };
 
-function generateTodayDate() {
-  const today = new Date();
-  const yy = parseInt(today.getFullYear().toString().slice(2)) + 5
-  const month = today.getMonth() + 1
-  const mm = month < 10 ? ("0" + month.toString()) : month;
-  const expirationDate = `${mm}/${yy}`;
-  return expirationDate;
-};
 
 function generateCardCVV() {
   const cryptr = new Cryptr(process.env.CRYPTR_SECRET_KEY);
@@ -137,23 +122,9 @@ function generateCardCVV() {
   return encryptedCVV;
 };
 
-async function findCardById(cardId: number) {
-  const card = await cardRepository.findById(cardId);
-  if (!card) throw { statusCode: 404, message: "Card Not Found" };
-  return card;
-};
 
-async function validateCardExpirationDate(card: any) {
-  const currentDate = generateTodayDate();
-  const currentYear = parseInt(currentDate.slice(3));
-  const expirationYear = parseInt(card.expirationDate.slice(3));
-  const currentMonth = parseInt(currentDate.slice(0, 2));
-  const expirationMonth = parseInt(card.expirationDate.slice(0, 2));
 
-  if (currentYear >= expirationYear && currentMonth > expirationMonth) {
-    throw { statusCode: 401, message: "Expired Card" };
-  }
-};
+
 
 async function validateCardActivation(card: any) {
   if (card.password) throw { statusCode: 401, message: "Card Already Actived" };

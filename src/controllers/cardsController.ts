@@ -7,14 +7,13 @@ import {
 } from "../services/cardsService.js";
 
 export async function createCard(req: Request, res: Response) {
-  const { "x-api-key": x_api_key }: any = req.headers;
   const { employeeId, type }:
     {
       employeeId: number,
       type: cardRepository.TransactionTypes,
     } = req.body;
 
-  await createCardsService(employeeId, type, x_api_key);
+  await createCardsService(employeeId, type);
 
   res.sendStatus(201);
 };
