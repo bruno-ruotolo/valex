@@ -6,7 +6,7 @@ export interface Employee {
   cpf: string;
   email: string;
   companyId: number;
-}
+};
 
 export async function findById(id: number) {
   const result = await connection.query<Employee, [number]>(
@@ -15,4 +15,4 @@ export async function findById(id: number) {
   );
 
   return result.rows[0];
-}
+};

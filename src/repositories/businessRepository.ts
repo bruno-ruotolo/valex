@@ -5,7 +5,7 @@ export interface Business {
   id: number;
   name: string;
   type: TransactionTypes;
-}
+};
 
 export async function findById(id: number) {
   const result = await connection.query<Business, [number]>(
@@ -14,4 +14,4 @@ export async function findById(id: number) {
   );
 
   return result.rows[0];
-}
+};

@@ -7,6 +7,6 @@ export default function errorHandler(error: any, req: Request, res: Response, ne
   if (statusCode === 401) return res.status(401).send(message);
   if (statusCode === 409) return res.status(409).send(message);
 
-  console.log(chalk.red.bold(error))
-  res.sendStatus(500);
+  console.log(chalk.red.bold(error));
+  res.status(500).send(error);
 };

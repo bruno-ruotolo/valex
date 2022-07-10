@@ -5,4 +5,4 @@ export function mapObjectToUpdateQuery({ object, offset = 1 }) {
   const objectValues = Object.values(object);
 
   return { objectColumns, objectValues };
-}
+};

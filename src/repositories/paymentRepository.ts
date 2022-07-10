@@ -6,7 +6,7 @@ export interface Payment {
   businessId: number;
   timestamp: Date;
   amount: number;
-}
+};
 export type PaymentWithBusinessName = Payment & { businessName: string };
 export type PaymentInsertData = Omit<Payment, "id" | "timestamp">;
 
@@ -23,17 +23,17 @@ export async function findByCardId(cardId: number) {
   );
 
   return result.rows;
-}
+};
 
 export async function sumByCardId(cardId: number) {
   const result = await connection.query(
-    `SELECT SUM(amount) as "paymentAmount"
+    `SELECT SUM(amount) as "paymentSum"
     FROM payments WHERE "cardId"=$1`,
     [cardId]
   );
 
   return result.rows[0];
-}
+};
 
 export async function insert(paymentData: PaymentInsertData) {
   const { cardId, businessId, amount } = paymentData;
@@ -42,4 +42,4 @@ export async function insert(paymentData: PaymentInsertData) {
     `INSERT INTO payments ("cardId", "businessId", amount) VALUES ($1, $2, $3)`,
     [cardId, businessId, amount]
   );
-}
+};

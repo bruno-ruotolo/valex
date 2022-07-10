@@ -1,4 +1,8 @@
+import bcrypt from "bcrypt";
+
 import * as cardRepository from "../repositories/cardRepository.js"
+import * as rechargeRepository from "../repositories/rechargeRepository.js"
+import * as paymentRepository from "../repositories/paymentRepository.js"
 
 export async function findCardById(cardId: number) {
   const card = await cardRepository.findById(cardId);
@@ -8,8 +12,8 @@ export async function findCardById(cardId: number) {
 
 export function generateTodayDate() {
   const today = new Date();
-  const yy = parseInt(today.getFullYear().toString().slice(2)) + 5
-  const month = today.getMonth() + 1
+  const yy = parseInt(today.getFullYear().toString().slice(2)) + 5;
+  const month = today.getMonth() + 1;
   const mm = month < 10 ? ("0" + month.toString()) : month;
   const expirationDate = `${mm}/${yy}`;
   return expirationDate;
@@ -24,9 +28,23 @@ export async function validateCardExpirationDate(card: any) {
 
   if (currentYear >= expirationYear && currentMonth > expirationMonth) {
     throw { statusCode: 401, message: "Expired Card" };
-  }
+  };
 };
 
 export async function validateActiveCard(card: any) {
   if (!card.password) throw { statusCode: 401, message: "Card Inactive" };
+};
+
+export async function validatePassword(card: any, password: string) {
+  if (!bcrypt.compareSync(password, card.password)) {
+    throw { statusCode: 401, message: "Invalid Password" };
+  };
+};
+
+export async function calculateCardBalance(cardId: number) {
+  const { rechargeSum } = await rechargeRepository.sumByCardId(cardId);
+  const { paymentSum } = await paymentRepository.sumByCardId(cardId);
+
+  const balance = rechargeSum - paymentSum;
+  return balance;
 };

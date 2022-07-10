@@ -3,13 +3,10 @@ import Cryptr from "cryptr";
 import bcrypt from "bcrypt";
 
 import * as employeeRepository from "../repositories/employeeRepository.js"
-import * as companyRepository from "../repositories/companyRepository.js"
 import * as cardRepository from "../repositories/cardRepository.js"
 import * as rechargeRepository from "../repositories/rechargeRepository.js"
 import * as paymentRepository from "../repositories/paymentRepository.js"
 import * as utils from "../utils/utils.js"
-
-import chalk from 'chalk';
 
 export async function createCardsService(
   employeeId: number,
@@ -33,7 +30,7 @@ export async function createCardsService(
     originalCardId: null,
     isBlocked: true,
     type
-  }
+  };
 
   await cardRepository.insert(cardData);
 };
@@ -57,11 +54,10 @@ export async function infosCardsService(cardId: number) {
   await utils.findCardById(cardId);
   const recharges = await rechargeRepository.findByCardId(cardId);
   const payments = await paymentRepository.findByCardId(cardId);
-  const { rechargeAmount } = await rechargeRepository.sumByCardId(cardId);
-  const { paymentAmount } = await paymentRepository.sumByCardId(cardId);
+  const balance = await utils.calculateCardBalance(cardId);
 
   const infoData = {
-    balance: rechargeAmount - paymentAmount,
+    balance,
     transactions: payments,
     recharges: recharges
   };
@@ -69,11 +65,11 @@ export async function infosCardsService(cardId: number) {
   return infoData;
 };
 
-export async function lockCardsService(cardId: number, password: string, blockStatus: boolean) {
+export async function blockCardsService(cardId: number, password: string, blockStatus: boolean) {
   const card = await utils.findCardById(cardId);
   await utils.validateCardExpirationDate(card);
-  await validateLockCards(card, blockStatus);
-  await validatePassword(card, password);
+  await validateBlockCards(card, blockStatus);
+  await utils.validatePassword(card, password);
   await cardRepository.update(cardId, { isBlocked: blockStatus });
 };
 
@@ -95,16 +91,16 @@ function generateCardName(fullName: string) {
     .slice(1, -1);
 
   middlesNamesArray.map((middleNameString: string, index: number) => {
-    const middleNameAbbreviate = (middleNameString.length > 3) ? middleNameString.charAt(0) : ""
+    const middleNameAbbreviate = (middleNameString.length > 3) ? middleNameString.charAt(0) : "";
     middlesNamesArray[index] = middleNameAbbreviate;
   });
 
-  const fullNameSplit = fullNameUpper.split(" ")
+  const fullNameSplit = fullNameUpper.split(" ");
 
   const cardholderName =
     `${fullNameSplit[0]} 
     ${middlesNamesArray.join(" ")} 
-    ${fullNameSplit[fullNameSplit.length - 1]}`
+    ${fullNameSplit[fullNameSplit.length - 1]}`;
 
   return cardholderName;
 };
@@ -114,17 +110,12 @@ function generateCardNumber() {
   return cardNumber;
 };
 
-
 function generateCardCVV() {
   const cryptr = new Cryptr(process.env.CRYPTR_SECRET_KEY);
   const cvcNumber = faker.finance.creditCardCVV();
   const encryptedCVV = cryptr.encrypt(cvcNumber);
   return encryptedCVV;
 };
-
-
-
-
 
 async function validateCardActivation(card: any) {
   if (card.password) throw { statusCode: 401, message: "Card Already Actived" };
@@ -142,12 +133,8 @@ function encryptPassword(password: string) {
   return passwordHash;
 };
 
-async function validateLockCards(card: any, blockStatus: boolean) {
+async function validateBlockCards(card: any, blockStatus: boolean) {
   if (card.isBlocked === blockStatus) throw { statusCode: 401, message: "Card Already Blocked/Unblocked" };
 };
 
-async function validatePassword(card: any, password: string) {
-  if (!bcrypt.compareSync(password, card.password)) {
-    throw { statusCode: 401, message: "Invalid Password" };
-  }
-};
+

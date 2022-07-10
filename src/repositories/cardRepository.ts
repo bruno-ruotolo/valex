@@ -20,7 +20,7 @@ export interface Card {
   originalCardId?: number;
   isBlocked: boolean;
   type: TransactionTypes;
-}
+};
 
 export type CardInsertData = Omit<Card, "id">;
 export type CardUpdateData = Partial<Card>;
@@ -28,7 +28,7 @@ export type CardUpdateData = Partial<Card>;
 export async function find() {
   const result = await connection.query<Card>("SELECT * FROM cards");
   return result.rows;
-}
+};
 
 export async function findById(id: number) {
   const result = await connection.query<Card, [number]>(
@@ -37,7 +37,7 @@ export async function findById(id: number) {
   );
 
   return result.rows[0];
-}
+};
 
 export async function findByTypeAndEmployeeId(
   type: TransactionTypes,
@@ -49,7 +49,7 @@ export async function findByTypeAndEmployeeId(
   );
 
   return result.rows[0];
-}
+};
 
 export async function findByCardDetails(
   number: string,
@@ -65,7 +65,7 @@ export async function findByCardDetails(
   );
 
   return result.rows[0];
-}
+};
 
 export async function insert(cardData: CardInsertData) {
   const {
@@ -100,7 +100,7 @@ export async function insert(cardData: CardInsertData) {
       type,
     ]
   );
-}
+};
 
 export async function update(id: number, cardData: CardUpdateData) {
   const { objectColumns: cardColumns, objectValues: cardValues } =
@@ -117,8 +117,8 @@ export async function update(id: number, cardData: CardUpdateData) {
   `,
     [id, ...cardValues]
   );
-}
+};
 
 export async function remove(id: number) {
   connection.query<any, [number]>("DELETE FROM cards WHERE id=$1", [id]);
-}
+};

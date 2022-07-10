@@ -1,11 +1,11 @@
 import express, { json } from "express";
 import "express-async-errors";
-import cors from "cors"
+import cors from "cors";
 import chalk from "chalk";
 import dotenv from "dotenv";
 dotenv.config();
 
-import router from "../src/routers/index.js"
+import router from "../src/routers/index.js";
 import errorHandler from "./middlewares/errorHandlerMiddleware.js";
 
 const port = +process.env.PORT || 5000;
