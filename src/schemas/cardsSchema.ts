@@ -16,7 +16,7 @@ export const infosCardSchema = joi.object({
   cardId: joi.number().required()
 });
 
-export const blockCardSchema = joi.object({
+export const lockCardSchema = joi.object({
   cardId: joi.number().required(),
   password: joi.string().pattern(/\d{4,}/).required(),
 });

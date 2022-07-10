@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import * as cardRepository from "../repositories/cardRepository.js"
 import {
-  activateCardsService, blockCardsService,
+  activateCardsService, lockCardsService,
   createCardsService, infosCardsService
 } from "../services/cardsService.js";
 
@@ -39,9 +39,17 @@ export async function infosCard(req: Request, res: Response) {
   res.status(200).send(infoData);
 };
 
-export async function blockCard(req: Request, res: Response) {
+export async function lockCard(req: Request, res: Response) {
   const { cardId, password }: { cardId: number, password: string } = req.body;
 
-  await blockCardsService(cardId, password);
+  await lockCardsService(cardId, password, true);
   res.sendStatus(200);
 };
+
+export async function unlockCard(req: Request, res: Response) {
+  const { cardId, password }: { cardId: number, password: string } = req.body;
+
+  await lockCardsService(cardId, password, false);
+  res.sendStatus(200);
+};
+

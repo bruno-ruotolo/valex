@@ -70,12 +70,12 @@ export async function infosCardsService(cardId: number) {
   return infoData;
 };
 
-export async function blockCardsService(cardId: number, password: string) {
+export async function lockCardsService(cardId: number, password: string, blockStatus: boolean) {
   const card = await findCardById(cardId);
   await validateCardExpirationDate(card);
-  await validateBlockCards(card);
+  await validateLockCards(card, blockStatus);
   await validatePassword(card, password);
-  await cardRepository.update(cardId, { isBlocked: true });
+  await cardRepository.update(cardId, { isBlocked: blockStatus });
 };
 
 async function validateApiKey(x_api_key: string) {
@@ -171,8 +171,8 @@ function encryptPassword(password: string) {
   return passwordHash;
 };
 
-async function validateBlockCards(card: any) {
-  if (card.isBlocked === true) throw { statusCode: 401, message: "Card Already Blocked" };
+async function validateLockCards(card: any, blockStatus: boolean) {
+  if (card.isBlocked === blockStatus) throw { statusCode: 401, message: "Card Already Blocked/Unblocked" };
 };
 
 async function validatePassword(card: any, password: string) {
