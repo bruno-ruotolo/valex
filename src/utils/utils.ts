@@ -26,7 +26,11 @@ export async function validateCardExpirationDate(card: any) {
   const currentMonth = parseInt(currentDate.slice(0, 2));
   const expirationMonth = parseInt(card.expirationDate.slice(0, 2));
 
-  if (currentYear >= expirationYear && currentMonth > expirationMonth) {
+  if (currentYear > expirationYear) {
+    throw { statusCode: 401, message: "Expired Card" };
+  };
+
+  if (currentYear === expirationYear && currentMonth > expirationMonth) {
     throw { statusCode: 401, message: "Expired Card" };
   };
 };

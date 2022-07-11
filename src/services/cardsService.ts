@@ -37,7 +37,7 @@ export async function createCardsService(
 
 export async function activateCardsService(cardId: number, password: string, securityCode: string) {
   const card = await utils.findCardById(cardId);
-  await utils.validateCardExpirationDate(card,);
+  await utils.validateCardExpirationDate(card);
   await validateCardActivation(card);
   await validateCVV(card, securityCode);
   const passwordHash = encryptPassword(password);
