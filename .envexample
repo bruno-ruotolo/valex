@@ -1,3 +1,4 @@
 DATABASE_URL= The databases connection string
 PORT= The running port
 CRYPTR_SECRET_KEY= A cryptr secret key
+MODE= "PROD if you're using a deploy database OR DEV if you're using a local database"
