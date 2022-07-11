@@ -16,7 +16,7 @@ export async function createCardsService(
   const employee = await findEmployee(employeeId);
   const cardholderName = generateCardName(employee.fullName);
   const cardNumber = generateCardNumber();
-  const expirationDate = utils.generateTodayDate();
+  const expirationDate = utils.generateExpirationDate();
   const encryptedCVV = generateCardCVV();
 
   const cardData = {

@@ -10,7 +10,7 @@ export async function findCardById(cardId: number) {
   return card;
 };
 
-export function generateTodayDate() {
+export function generateExpirationDate() {
   const today = new Date();
   const yy = parseInt(today.getFullYear().toString().slice(2)) + 5;
   const month = today.getMonth() + 1;
@@ -19,8 +19,17 @@ export function generateTodayDate() {
   return expirationDate;
 };
 
+export function generateCurrentDate() {
+  const today = new Date();
+  const yy = parseInt(today.getFullYear().toString().slice(2));
+  const month = today.getMonth() + 1;
+  const mm = month < 10 ? ("0" + month.toString()) : month;
+  const currentDate = `${mm}/${yy}`;
+  return currentDate;
+};
+
 export async function validateCardExpirationDate(card: any) {
-  const currentDate = generateTodayDate();
+  const currentDate = generateCurrentDate();
   const currentYear = parseInt(currentDate.slice(3));
   const expirationYear = parseInt(card.expirationDate.slice(3));
   const currentMonth = parseInt(currentDate.slice(0, 2));
