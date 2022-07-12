@@ -38,41 +38,66 @@ $ npm run dev
 API:
 
 ```
-- POST /cadastro
-    - Rota para cadastrar um novo usuário
+- POST /card/create (companie authentication)
+    - Route to the companie create a new card
+    - headers: { "x-api-key": "$apiKey"}
+    - body: {
+    "employeeId": 0,
+    "type": "loremipsum"
+    }
+
+- POST /card/activate
+    - Route to the employee active the card
     - headers: {}
     - body: {
-        "nome": "Lorem ipsum",
-        "email": "lorem@gmail.com",
-        "senha": "loremipsum"
+    cardId: 0,
+    securityCode: "000",
+    password: "loremipsum"
     }
-- POST /login
-    - Rota para fazer login
+
+- POST /card/activate
+    - Route for the employee active the card
     - headers: {}
     - body: {
-    "email": "lorem@gmail.com",
-    "senha": "loremipsum"
+    cardId: 0,
+    securityCode: "000",
+    password: "loremipsum"
     }
-- GET /usuarios (autenticada)
-    - Rota para listar todos os usuários
-    - headers: { "Authorization": "Bearer $token" }
-    - body: {}
-- GET /usuarios/:id (autenticada)
-    - Rota para listar um usuário pelo id
-    - headers: { "Authorization": "Bearer $token" }
-    - body: {}
-- PUT /usuarios/:id (autenticada)
-    - Rota para atualizar um usuário pelo id
-    - headers: { "Authorization": "Bearer $token" }
+
+- POST /card/block
+    - Route for employee blocks the card
+    - headers: {}
     - body: {
-        "nome": "Lorem ipsum2",
-        "email": "lorem2@gmail.com",
-        "senha": "loremipsum2"
+    cardId: 0,
+    password: "loremipsum"
     }
-- DELETE /usuarios/:id (autenticada)
-    - Rota para deletar um usuário pelo id
-    - headers: { "Authorization": "Bearer $token" }
-    - body: {}
+
+- POST /card/unblock
+    - Route for employee unblocks the card
+    - headers: {}
+    - body: {
+    cardId: 0,
+    password: "loremipsum"
+    }
+
+- POST /payment
+    - Route for employee make payments
+    - headers: {}
+    - body: {
+    cardId: 0,
+    password: "loremipsum",
+    businessId: 0,
+    amount: 1
+    }
+
+- POST /recharge (companie authentication)
+    - Route for companies recharge their employees' cards
+    - headers: {"x-api-key": "$apiKey"}
+    - body: {
+    cardId: 0,
+    amount: 1
+    }
+
 ```
 
 ## Authors
