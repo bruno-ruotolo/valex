@@ -5,7 +5,7 @@ import * as rechargeRepository from "../repositories/rechargeRepository.js"
 import * as paymentRepository from "../repositories/paymentRepository.js"
 
 export async function findCardById(cardId: number) {
-  const card = await cardRepository.findById(cardId);
+  const card: cardRepository.Card = await cardRepository.findById(cardId);
   if (!card) throw { statusCode: 404, message: "Card Not Found" };
   return card;
 };
