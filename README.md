@@ -74,3 +74,7 @@ API:
     - headers: { "Authorization": "Bearer $token" }
     - body: {}
 ```
+
+## Authors
+
+- [@brunoruotolo](https://github.com/bruno-ruotolo)
