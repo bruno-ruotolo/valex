@@ -39,8 +39,8 @@ $ npm run dev
 API:
 
 ```
-- POST /card/create (companie authentication)
-    - Route to the companie create a new card
+- POST /card/create (company authentication)
+    - Route for company creates a new card
     - headers: { "x-api-key": "$apiKey"}
     - body: {
     "employeeId": 0,
@@ -48,7 +48,7 @@ API:
     }
 
 - POST /card/activate
-    - Route to the employee active the card
+    - Route for employee actives the card
     - headers: {}
     - body: {
     cardId: 0,
@@ -56,13 +56,11 @@ API:
     password: "loremipsum"
     }
 
-- POST /card/activate
-    - Route for the employee active the card
+- POST /card/infos
+    - Route for employee check the balance, payments and recharges
     - headers: {}
     - body: {
-    cardId: 0,
-    securityCode: "000",
-    password: "loremipsum"
+    cardId: 0
     }
 
 - POST /card/block
@@ -91,7 +89,7 @@ API:
     amount: 1
     }
 
-- POST /recharge (companie authentication)
+- POST /recharge (company authentication)
     - Route for companies recharge their employees' cards
     - headers: {"x-api-key": "$apiKey"}
     - body: {
