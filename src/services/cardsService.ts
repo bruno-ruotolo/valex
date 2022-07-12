@@ -36,7 +36,7 @@ export async function createCardsService(
 };
 
 export async function activateCardsService(cardId: number, password: string, securityCode: string) {
-  const card = await utils.findCardById(cardId);
+  const card: cardRepository.Card = await utils.findCardById(cardId);
   await utils.validateCardExpirationDate(card);
   await validateCardActivation(card);
   await validateCVV(card, securityCode);
@@ -86,7 +86,7 @@ async function findEmployee(employeeId: number) {
 
 function generateCardName(fullName: string) {
   const fullNameUpper: string = fullName.toUpperCase();
-  const middlesNamesArray: any = fullNameUpper
+  const middlesNamesArray: string[] = fullNameUpper
     .split(" ")
     .slice(1, -1);
 
@@ -117,11 +117,11 @@ function generateCardCVV() {
   return encryptedCVV;
 };
 
-async function validateCardActivation(card: any) {
+async function validateCardActivation(card: cardRepository.Card) {
   if (card.password) throw { statusCode: 401, message: "Card Already Actived" };
 };
 
-async function validateCVV(card: any, securityCode: string) {
+async function validateCVV(card: cardRepository.Card, securityCode: string) {
   const cryptr = new Cryptr(process.env.CRYPTR_SECRET_KEY);
   const decryptedCVV = cryptr.decrypt(card.securityCode);
 
@@ -133,7 +133,7 @@ function encryptPassword(password: string) {
   return passwordHash;
 };
 
-async function validateBlockCards(card: any, blockStatus: boolean) {
+async function validateBlockCards(card: cardRepository.Card, blockStatus: boolean) {
   if (card.isBlocked === blockStatus) throw { statusCode: 401, message: "Card Already Blocked/Unblocked" };
 };
 
