@@ -9,7 +9,8 @@ while the employees can active, block, unblock their cards and manage their purc
 - Input's validations with [JOI API](https://github.com/sideway/joi)
 - Express
 - NodeJS linked to Postgres database
-- 
+- Typescript Usage
+- Layered Architecture
 
 ## Technologies
 The following tools, frameworks and languages were used in this project:<br>
